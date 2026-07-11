@@ -1,59 +1,129 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel To-Do List with Categories & Authentication
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A full-stack task management web app built with Laravel, featuring user authentication, task-category relationships, and per-user data scoping. Built as a hands-on project to deepen Laravel skills beyond basic CRUD — specifically authentication and Eloquent relationships.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- User registration, login, and logout (via Laravel Breeze)
+- Each user only sees and manages their own tasks and categories
+- Create, edit, and delete tasks
+- Create, edit, and delete categories
+- Assign multiple categories to a single task (many-to-many relationship)
+- Mark tasks as complete/incomplete with a single click
+- Optional due dates and descriptions per task
+- Server-side validation on all forms
+- Dark mode support
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Backend:** Laravel 12
+- **Authentication:** Laravel Breeze (Blade + Alpine.js stack)
+- **Database:** SQLite
+- **Frontend:** Blade templating engine, Tailwind CSS, Alpine.js
+- **Tools:** XAMPP, VS Code, Git
 
-## Learning Laravel
+## Database Schema
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+**users** (created by Breeze)
+| Field | Type |
+|---|---|
+| id | bigint |
+| name | string |
+| email | string, unique |
+| password | hashed string |
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**categories**
+| Field | Type | Notes |
+|---|---|---|
+| id | bigint | Primary key |
+| user_id | foreign key → users.id | Cascades on delete |
+| name | string | |
 
-## Laravel Sponsors
+**tasks**
+| Field | Type | Notes |
+|---|---|---|
+| id | bigint | Primary key |
+| user_id | foreign key → users.id | Cascades on delete |
+| title | string | |
+| description | text | Nullable |
+| due_date | date | Nullable |
+| completed | boolean | Defaults to false |
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+**category_task** (pivot table for many-to-many relationship)
+| Field | Type |
+|---|---|
+| id | bigint |
+| category_id | foreign key → categories.id |
+| task_id | foreign key → tasks.id |
 
-### Premium Partners
+## Relationships
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- A `User` has many `Tasks` and many `Categories`
+- A `Task` belongs to one `User`
+- A `Category` belongs to one `User`
+- A `Task` belongs to many `Categories`, and a `Category` belongs to many `Tasks` (many-to-many via `category_task`)
 
-## Contributing
+## Routes
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Method | URI | Action |
+|---|---|---|
+| GET | /register, /login | Auth pages |
+| GET | /dashboard | User dashboard (auth required) |
+| GET | /tasks | List user's tasks |
+| GET | /tasks/create | Show create task form |
+| POST | /tasks | Store new task |
+| GET | /tasks/{id}/edit | Show edit task form |
+| PUT/PATCH | /tasks/{id} | Update task |
+| DELETE | /tasks/{id} | Delete task |
+| PATCH | /tasks/{id}/toggle | Toggle task completion |
+| GET | /categories | List user's categories |
+| GET | /categories/create | Show create category form |
+| POST | /categories | Store new category |
+| GET | /categories/{id}/edit | Show edit category form |
+| PUT/PATCH | /categories/{id} | Update category |
+| DELETE | /categories/{id} | Delete category |
 
-## Code of Conduct
+## Installation / Running Locally
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. Clone the repository
+git clone https://github.com/aakriti61/todo-app.git
+cd todo-app
 
-## Security Vulnerabilities
+2. Install PHP dependencies
+composer install
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+3. Install JavaScript dependencies
+npm install
 
-## License
+4. Copy the environment file and generate an app key
+copy .env.example .env
+php artisan key:generate
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+5. Create the SQLite database file
+New-Item database\database.sqlite -ItemType File
+
+6. Run migrations
+php artisan migrate
+
+7. Build frontend assets
+npm run build
+
+8. Start the development server
+php artisan serve
+
+9. Visit `http://127.0.0.1:8000/register` to create an account, then explore the app
+
+## What I Learned
+
+- Implementing authentication using Laravel Breeze
+- Eloquent relationships: `hasMany`, `belongsTo`, and `belongsToMany`
+- Working with pivot tables and the `sync()` method for many-to-many data
+- Scoping database queries to the logged-in user to prevent unauthorized data access (IDOR prevention)
+- Eager loading (`with()`) to avoid the N+1 query problem
+- Handling checkbox arrays in forms and validating array input
+- Defining custom, non-resource routes (e.g., a toggle-completion endpoint)
+
+## Author
+
+Aakriti Simkhada
+[aakriti206105@gmail.com](mailto:aakriti206105@gmail.com)
